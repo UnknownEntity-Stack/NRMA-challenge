@@ -1,2 +1,2 @@
-NOTE: Node JS is a dependency
+NOTE: Node JS is a required dependency
 
