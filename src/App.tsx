@@ -37,10 +37,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Screen, HistoryItem, PassStatus } from './types';
 
 const MOCK_HISTORY: HistoryItem[] = [
-  { id: '1', passId: 'AT-992-XC8', time: '10:45', date: 'Tonight — Friday, Oct 24', result: 'PASS', bac: 0.02, status: 'ACTIVE' },
-  { id: '2', passId: 'BR-104-QL2', time: '09:12', date: 'Tonight — Friday, Oct 24', result: 'PASS', bac: 0.01, status: 'REDEEMED' },
-  { id: '3', passId: 'NM-221-PT9', time: '08:44', date: 'Tonight — Friday, Oct 24', result: 'FAIL', bac: 0.06, status: 'DENIED' },
-  { id: '4', passId: 'XK-440-LM1', time: '11:30', date: 'Thursday, Oct 23', result: 'PASS', bac: 0.00, status: 'EXPIRED' },
+  { id: '1', passId: 'AT-992-XC8', time: '10:45', date: 'Tonight — Friday, Oct 24', result: 'OVER LIMIT', bac: 0.07, status: 'ACTIVE' },
+  { id: '2', passId: 'BR-104-QL2', time: '09:12', date: 'Tonight — Friday, Oct 24', result: 'OVER LIMIT', bac: 0.06, status: 'REDEEMED' },
+  { id: '3', passId: 'NM-221-PT9', time: '08:44', date: 'Tonight — Friday, Oct 24', result: 'OVER LIMIT', bac: 0.08, status: 'DENIED' },
+  { id: '4', passId: 'XK-440-LM1', time: '11:30', date: 'Thursday, Oct 23', result: 'UNDER LIMIT', bac: 0.00, status: 'EXPIRED' },
 ];
 
 export default function App() {
@@ -80,8 +80,8 @@ export default function App() {
 
   const handleGeneratePass = () => {
     const score = parseFloat(bacScore);
-    if (score >= 0.05) {
-      alert("BAC score is too high for automatic pass generation. Please follow standard safety protocols.");
+    if (score < 0.05) {
+      alert("Patron is within legal driving limits (BAC < 0.05). Safe Home Pass is only issued to those exceeding the limit to ensure safe transit.");
       return;
     }
     
@@ -93,7 +93,7 @@ export default function App() {
       passId: newPassId,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       date: 'Tonight — Friday, Oct 24',
-      result: 'PASS',
+      result: 'OVER LIMIT',
       bac: score,
       status: 'ACTIVE'
     };
@@ -107,7 +107,7 @@ export default function App() {
     <header className="bg-surface/80 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center px-6 py-4 w-full shadow-[0_10px_30px_rgba(7,30,39,0.06)]">
       <div className="flex items-center gap-4">
         <Menu className="text-on-surface-variant cursor-pointer" size={24} />
-        <h1 className="font-headline font-bold text-sm text-on-surface uppercase tracking-wider">The Hospitality Authority</h1>
+        <h1 className="font-headline font-bold text-sm text-on-surface uppercase tracking-wider">DriveSure</h1>
       </div>
       <div className="flex items-center gap-3">
         <div className="text-right hidden sm:block">
@@ -170,7 +170,8 @@ export default function App() {
               className="space-y-6"
             >
               <section>
-                <h2 className="font-headline font-black text-3xl text-on-surface mb-2 tracking-tight">Staff Overview</h2>
+                <h2 className="font-headline font-black text-3xl text-on-surface mb-1 tracking-tight">DriveSure</h2>
+                <p className="text-primary font-bold text-xs uppercase tracking-widest mb-2">Breathe. Check. Get home safe.</p>
                 <p className="text-on-surface-variant text-sm">Safe Home Pass Program Monitor</p>
               </section>
 
@@ -299,15 +300,15 @@ export default function App() {
                   <div className="flex gap-4 mt-6 w-full">
                     <button 
                       onClick={() => setBacScore('0.02')}
-                      className="flex-1 py-3 px-4 rounded-lg bg-secondary-container text-on-secondary-container font-bold text-sm flex items-center justify-center gap-2"
+                      className="flex-1 py-3 px-4 rounded-lg bg-secondary-container text-on-secondary-container font-bold text-xs flex items-center justify-center gap-2"
                     >
-                      <CheckCircle size={18} /> PASS
+                      <CheckCircle size={16} /> UNDER LIMIT
                     </button>
                     <button 
                       onClick={() => setBacScore('0.06')}
-                      className="flex-1 py-3 px-4 rounded-lg bg-error-container text-on-error-container font-bold text-sm flex items-center justify-center gap-2"
+                      className="flex-1 py-3 px-4 rounded-lg bg-error-container text-on-error-container font-bold text-xs flex items-center justify-center gap-2"
                     >
-                      <XCircle size={18} /> FAIL
+                      <XCircle size={16} /> OVER LIMIT
                     </button>
                   </div>
                 </div>
@@ -570,8 +571,8 @@ const HistoryCard: React.FC<{ item: HistoryItem }> = ({ item }) => {
           <span className="font-headline font-bold text-on-surface text-lg">{item.passId}</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.result === 'PASS' ? 'bg-secondary-container/30 text-secondary' : 'bg-error-container/30 text-error'}`}>
-            {item.result === 'PASS' ? <CheckCircle size={20} fill="currentColor" fillOpacity={0.2} /> : <XCircle size={20} fill="currentColor" fillOpacity={0.2} />}
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${item.result === 'OVER LIMIT' ? 'bg-error-container/30 text-error' : 'bg-secondary-container/30 text-secondary'}`}>
+            {item.result === 'OVER LIMIT' ? <XCircle size={20} fill="currentColor" fillOpacity={0.2} /> : <CheckCircle size={20} fill="currentColor" fillOpacity={0.2} />}
           </div>
           <div className="flex flex-col">
             <span className="text-on-surface-variant text-[10px] font-black uppercase tracking-wider">Result</span>
